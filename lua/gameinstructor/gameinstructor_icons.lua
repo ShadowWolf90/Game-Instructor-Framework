@@ -1,7 +1,8 @@
 print("[Game Instructor [ICONS]] Loaded.")
 
+GIIcons = {}
+
 function AddGIIcons()
-    GIIcons = {}
 
     local files, _ = file.Find("materials/gi_icons/*.png", "GAME")
     
