@@ -1,5 +1,4 @@
 print("[Game Instructor [SERVER]] Loaded.")
-include("gameinstructor/gameinstructor_icons.lua")
 
 util.AddNetworkString("GINetworkPosition")
 util.AddNetworkString("GINetwork")
