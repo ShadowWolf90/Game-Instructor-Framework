@@ -1,22 +1,28 @@
 print("[Game Instructor [SERVER]] Loaded.")
 
-util.AddNetworkString("GINetworkPosition")
 util.AddNetworkString("GINetwork")
 
 include("gameinstructor/gameinstructor_icons.lua")
 
+hook.Add( "Initialize", "LoadGIIconsClient", function()
+	AddGIIcons()
+end)
+
 function CreateGIHint(icon, text, pos)
-    if IsValid(GIIcons[icon]) and isentity(pos) and text ~= nil then
+    if GIIcons[icon] and text != nil then
         pos:SetNWString("GIIcon", icon)
         pos:SetNWString("GIText", text)
-    elseif (not IsValid(GIIcons[icon]) or text == nil or pos == nil) then
-        if not IsValid(GIIcons[icon]) then
-            ErrorNoHalt("Icon is incorrect. Please check your LUA script.")
-        elseif text == nil then
-            ErrorNoHalt("Text is incorrect. Please check your LUA script.")
-        elseif pos == nil then
-            ErrorNoHalt("Position/Entity is incorrect. Please check your LUA script.")
-        end
+    else
+        ErrorNoHalt("[Game Instructor [SERVER]] Oops, couldn't add hint! \n")
+    end
+end
+
+function RemoveGIHint(pos)
+    if isentity(pos) then
+        pos:SetNWString("GIIcon", nil)
+        pos:SetNWString("GIText", nil)
+    else
+        ErrorNoHalt("[Game Instructor [SERVER]] Oops, couldn't remove hint! \n")
     end
 end
 
@@ -37,12 +43,12 @@ local function GatherHints()
 
         if GIIcons[iconKey] then
             local HintInfo = {
-                position = ent:GetPos(),
+                position = ent:WorldSpaceCenter(),
                 icontype = iconKey,
                 hinttext = ent:GetNWString("GIText"),
                 debugid = hintindex
             }
-            print("Working!")
+            --print("Detected entity with GI Flag at: " .. tostring(HintInfo.position) .. ", type: " .. HintInfo.icontype .. ", and text: " .. HintInfo.hinttext)
             HintTable[hintindex] = HintInfo
         end
     end
@@ -52,6 +58,7 @@ end
 
 local function SendHintToClients()
     local HintData = GatherHints()
+
     net.Start("GINetwork")
     net.WriteTable(HintData)
     net.Broadcast()
