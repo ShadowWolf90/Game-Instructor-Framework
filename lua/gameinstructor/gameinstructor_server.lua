@@ -13,27 +13,29 @@ function CreateGIHint(icon, text, pos)
         pos:SetNWString("GIIcon", icon)
         pos:SetNWString("GIText", text)
     else
-        ErrorNoHalt("[Game Instructor [SERVER]] Oops, couldn't add hint! \n")
+        print("[Game Instructor [SERVER]] Oops, couldn't add hint! \n")
     end
 end
 
+--[[
+function CreateGITextbox(text, pos)
+    if GIIcons[icon] and text != nil then
+        pos:SetNWString("GIIcon", icon)
+        pos:SetNWString("GIText", text)
+    else
+        print("[Game Instructor [SERVER] Oops, couldn't add hint! \n")
+    end
+end
+]]--
+
 function RemoveGIHint(pos)
-    if isentity(pos) then
+    if IsValid(Entity(pos:EntIndex())) and isentity(pos) then
         pos:SetNWString("GIIcon", nil)
         pos:SetNWString("GIText", nil)
     else
-        ErrorNoHalt("[Game Instructor [SERVER]] Oops, couldn't remove hint! \n")
+        print("[Game Instructor [SERVER]] Oops, couldn't remove hint! \n")
     end
 end
-
-local iconKeyToCheck = "warning" -- Zastąp "nazwaIkony" odpowiednim kluczem do sprawdzenia
-
-if not GIIcons[iconKeyToCheck] then
-    print("Ikona o kluczu " .. iconKeyToCheck .. " nie istnieje w tabeli GIIcons.")
-else
-    print("Ikona o kluczu " .. iconKeyToCheck .. " istnieje w tabeli GIIcons.")
-end
-
 
 local function GatherHints()
     local HintTable = { }
