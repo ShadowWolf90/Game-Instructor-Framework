@@ -1,6 +1,6 @@
 print("[Game Instructor [CLIENT]] Loaded.")
 
-local HintEntity = {}
+local HintsTable = {}
 local SmoothTargetX = {}
 local SmoothTargetY = {}
 local SmoothArrowX = {}
@@ -8,7 +8,7 @@ local SmoothArrowY = {}
 local HintSoundPlayed = {}
 
 net.Receive("GINetwork", function()
-    HintEntity = net.ReadTable()
+    HintsTable = net.ReadTable()
 end)
 
 surface.CreateFont( "HintFont", {
@@ -37,12 +37,14 @@ local function DisplayHints()
     local ArrowHintY = {}
     local ArrowTexture = Material("gi_arrow/arrow_up.png")
 
-    for index, hint in pairs(HintEntity) do
+    for index, hint in pairs(HintsTable) do
+
         local HintPosition = hint.position
         local IconType = hint.icontype
         local HintText = hint.hinttext
-        local DebugID = hint.debugid
         local HintSnd = hint.hintsound
+        local HintID = hint.uniqueid
+
 
         local HintOnScreen = HintPosition:ToScreen()
         local HalfScreenX = ScrW() / 2
@@ -86,7 +88,7 @@ end
 
 hook.Add("HUDPaint", "GIHUDManager", DisplayHints)
 
-hook.Add( "InitPostEntity", "LoadGIIconsClient", function()
+hook.Add( "InitPostEntity", "LoadGIContentClient", function()
 	AddGIIcons()
     AddGISounds()
 end)
