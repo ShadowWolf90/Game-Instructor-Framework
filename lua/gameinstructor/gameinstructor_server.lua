@@ -5,7 +5,7 @@ util.AddNetworkString("GINetwork")
 include("gameinstructor/gameinstructor_icons.lua")
 include("gameinstructor/gameinstructor_sounds.lua")
 
-hook.Add( "Initialize", "LoadGIContentClient", function()
+hook.Add( "Initialize", "LoadGIContentServer", function()
 	AddGIIcons()
 	AddGISounds()
 end)
