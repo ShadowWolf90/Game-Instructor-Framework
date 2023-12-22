@@ -3,15 +3,18 @@ print("[Game Instructor [SERVER]] Loaded.")
 util.AddNetworkString("GINetwork")
 
 include("gameinstructor/gameinstructor_icons.lua")
+include("gameinstructor/gameinstructor_sounds.lua")
 
 hook.Add( "Initialize", "LoadGIIconsClient", function()
 	AddGIIcons()
+	AddGISounds()
 end)
 
-function CreateGIHint(icon, text, pos)
+function CreateGIHint(icon, text, pos, snd)
     if GIIcons[icon] and text != nil then
         pos:SetNWString("GIIcon", icon)
         pos:SetNWString("GIText", text)
+        pos:SetNWString("GISound", snd)
     else
         print("[Game Instructor [SERVER]] Oops, couldn't add hint! \n")
     end
@@ -32,6 +35,7 @@ function RemoveGIHint(pos)
     if IsValid(Entity(pos:EntIndex())) and isentity(pos) then
         pos:SetNWString("GIIcon", nil)
         pos:SetNWString("GIText", nil)
+        pos:SetNWString("GISound", nil)
     else
         print("[Game Instructor [SERVER]] Oops, couldn't remove hint! \n")
     end
@@ -48,6 +52,7 @@ local function GatherHints()
                 position = ent:WorldSpaceCenter(),
                 icontype = iconKey,
                 hinttext = ent:GetNWString("GIText"),
+                hintsound = ent:GetNWString("GISound"),
                 debugid = hintindex
             }
             --print("Detected entity with GI Flag at: " .. tostring(HintInfo.position) .. ", type: " .. HintInfo.icontype .. ", and text: " .. HintInfo.hinttext)

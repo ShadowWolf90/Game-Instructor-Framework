@@ -9,7 +9,7 @@ ENT.Category = "Game Instructor"
 
 function ENT:Initialize()
     if SERVER then
-        CreateGIHint("bulb", "Test for function!", self)
+        CreateGIHint("bulb", "Test for function!", self, "critical_event")
         self:SetModel("models/hunter/blocks/cube05x05x05.mdl")
         timer.Simple(5, function() 
             RemoveGIHint(self) 

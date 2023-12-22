@@ -5,6 +5,7 @@ local SmoothTargetX = {}
 local SmoothTargetY = {}
 local SmoothArrowX = {}
 local SmoothArrowY = {}
+local HintSoundPlayed = {}
 
 net.Receive("GINetwork", function()
     HintEntity = net.ReadTable()
@@ -41,6 +42,7 @@ local function DisplayHints()
         local IconType = hint.icontype
         local HintText = hint.hinttext
         local DebugID = hint.debugid
+        local HintSnd = hint.hintsound
 
         local HintOnScreen = HintPosition:ToScreen()
         local HalfScreenX = ScrW() / 2
@@ -75,6 +77,10 @@ local function DisplayHints()
             draw.SimpleText(HintText, "HintFont", SmoothTargetX[index] + 30, SmoothTargetY[index], Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         end
 
+        if HintSoundPlayed[index] != true and HintSnd != nil and GISounds[HintSnd] then
+            surface.PlaySound(GISounds[HintSnd])
+            HintSoundPlayed[index] = true
+        end
     end
 end
 
@@ -82,4 +88,5 @@ hook.Add("HUDPaint", "GIHUDManager", DisplayHints)
 
 hook.Add( "InitPostEntity", "LoadGIIconsClient", function()
 	AddGIIcons()
+    AddGISounds()
 end)
