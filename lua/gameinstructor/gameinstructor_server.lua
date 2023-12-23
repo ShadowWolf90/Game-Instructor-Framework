@@ -102,6 +102,10 @@ hook.Add("PreCleanupMap", "RemoveHintsOnCleaningMap", function()
     HintTable = { }
 end)
 
+hook.Add("EntityRemoved", "RemoveHintsOnEntityRemoved", function(entity)
+    RemoveGIHint(entity)
+end)
+
 concommand.Add("GIF_reload_server_content", function()  
 	AddGIIcons()
 	AddGISounds()
