@@ -33,6 +33,8 @@ function CreateGIVectorHint(icon, text, pos, snd, uniqueid)
         }
 
         HintTable[uniqueid] = VectorInfo
+    else
+        print("[Game Instructor [SERVER]] Oops, couldn't add hint! \n")
     end
 end
 
