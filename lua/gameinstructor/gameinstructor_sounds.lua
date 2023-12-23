@@ -14,6 +14,14 @@ function AddGISounds()
         GISounds[variableName] = "gi_sounds/" .. fileName
         print("[GIF Content Manager] Sound (" .. variableName .. ") has been loaded.")
     end
+
+    local filesWav, _ = file_Find("sound/gi_sounds/*.wav", "GAME")
+    
+    for _, fileNameWav in ipairs(filesWav) do
+        local variableName = string_gsub(fileName, "%.wav$", "")
+        GISounds[variableName] = "gi_sounds/" .. fileName
+        print("[GIF Content Manager] Sound (" .. variableName .. ") has been loaded.")
+    end
 end
 
 PrintTable(GISounds)
