@@ -90,4 +90,21 @@ hook.Add("Tick", "UpdateHintDataHook", function()
     SendHintToClients()
 end)
 
+hook.Add("PreUndo", "RemoveHintsOnPreUndo", function(undoData)
+    if undoData.Entities then
+        for _, entity in pairs(undoData.Entities) do
+            RemoveGIHint(entity)
+        end
+    end
+end)
+
+hook.Add("PreCleanupMap", "RemoveHintsOnCleaningMap", function() 
+    HintTable = { }
+end)
+
+concommand.Add("GIF_reload_server_content", function()  
+	AddGIIcons()
+	AddGISounds()
+end, nil, "Reload server content of Game Instructor Framework. Useful to add new icons/sounds or reload them after editing.")
+
 

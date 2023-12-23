@@ -6,6 +6,7 @@ local SmoothTargetY = {}
 local SmoothArrowX = {}
 local SmoothArrowY = {}
 local HintSoundPlayed = {}
+local TimeReceived = {}
 
 net.Receive("GINetwork", function()
     HintsTable = net.ReadTable()
@@ -36,6 +37,13 @@ local function DisplayHints()
     local ArrowHintX = {}
     local ArrowHintY = {}
     local ArrowTexture = Material("gi_arrow/arrow_up.png")
+    local NextY = 0
+
+    for key, _ in pairs(TimeReceived) do
+        if not HintsTable[key] then
+            TimeReceived[key] = nil
+        end
+    end
 
     for index, hint in pairs(HintsTable) do
 
@@ -45,6 +53,9 @@ local function DisplayHints()
         local HintSnd = hint.hintsound
         local HintID = hint.uniqueid
 
+        if not TimeReceived[index] then
+            TimeReceived[index] = CurTime()
+        end
 
         local HintOnScreen = HintPosition:ToScreen()
         local HalfScreenX = ScrW() / 2
@@ -57,26 +68,39 @@ local function DisplayHints()
         HintY[index] = HalfScreenY + math.sin(OnScreenHintPos) * Radius
         ArrowHintX[index] = HalfScreenX + math.cos(OnScreenHintPos) * ArrowRadius
         ArrowHintY[index] = HalfScreenY + math.sin(OnScreenHintPos) * ArrowRadius
-
-        if (HintOnScreen.x < 0 or HintOnScreen.x > ScrW() or HintOnScreen.y < 0 or HintOnScreen.y > ScrH()) then
-            SmoothTargetX[index] = Lerp(FrameTime() / 0.1, SmoothTargetX[index] or HalfScreenX, HintX[index])
-            SmoothTargetY[index] = Lerp(FrameTime() / 0.1, SmoothTargetY[index] or HalfScreenY, HintY[index])
-            SmoothArrowX[index] = Lerp(FrameTime() / 0.1, SmoothArrowX[index] or HalfScreenX, ArrowHintX[index])
-            SmoothArrowY[index] = Lerp(FrameTime() / 0.1, SmoothArrowY[index] or HalfScreenY, ArrowHintY[index])
-            surface.SetMaterial(GIIcons[IconType])
-            surface.SetDrawColor(255, 255, 255, 255)
-            surface.DrawTexturedRectRotated(SmoothTargetX[index], SmoothTargetY[index], 50, 50, 0)
-            surface.SetMaterial(ArrowTexture)
-            surface.DrawTexturedRectRotated(SmoothArrowX[index], SmoothArrowY[index], 50, 50, HintArrowRotation)
-        else
-            SmoothTargetX[index] = Lerp(FrameTime() / 0.1, SmoothTargetX[index] or HalfScreenX, HintOnScreen.x)
-            SmoothTargetY[index] = Lerp(FrameTime() / 0.1, SmoothTargetY[index] or HalfScreenY, HintOnScreen.y)
-            SmoothArrowX[index] = Lerp(FrameTime() / 0.1, SmoothArrowX[index] or HalfScreenX, HintOnScreen.x)
-            SmoothArrowY[index] = Lerp(FrameTime() / 0.1, SmoothArrowY[index] or HalfScreenY, HintOnScreen.y)
+        
+        
+        if CurTime() < TimeReceived[index] + 2 then
+            SmoothTargetX[index] = HalfScreenX - 50 
+            SmoothTargetY[index] = HalfScreenY + 250 + NextY
+            SmoothArrowX[index] = SmoothTargetX[index]
+            SmoothArrowY[index] = SmoothTargetY[index]
             surface.SetMaterial(GIIcons[IconType])
             surface.SetDrawColor(255, 255, 255, 255)
             surface.DrawTexturedRectRotated(SmoothTargetX[index], SmoothTargetY[index], 50, 50, 0)
             draw.SimpleText(HintText, "HintFont", SmoothTargetX[index] + 30, SmoothTargetY[index], Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            NextY = NextY + 65
+        else
+            if (HintOnScreen.x < 0 or HintOnScreen.x > ScrW() or HintOnScreen.y < 0 or HintOnScreen.y > ScrH()) then
+                SmoothTargetX[index] = Lerp(FrameTime() / 0.1, SmoothTargetX[index] or HalfScreenX, HintX[index])
+                SmoothTargetY[index] = Lerp(FrameTime() / 0.1, SmoothTargetY[index] or HalfScreenY, HintY[index])
+                SmoothArrowX[index] = Lerp(FrameTime() / 0.1, SmoothArrowX[index] or HalfScreenX, ArrowHintX[index])
+                SmoothArrowY[index] = Lerp(FrameTime() / 0.1, SmoothArrowY[index] or HalfScreenY, ArrowHintY[index])
+                surface.SetMaterial(GIIcons[IconType])
+                surface.SetDrawColor(255, 255, 255, 255)
+                surface.DrawTexturedRectRotated(SmoothTargetX[index], SmoothTargetY[index], 50, 50, 0)
+                surface.SetMaterial(ArrowTexture)
+                surface.DrawTexturedRectRotated(SmoothArrowX[index], SmoothArrowY[index], 50, 50, HintArrowRotation)
+            else
+                SmoothTargetX[index] = Lerp(FrameTime() / 0.1, SmoothTargetX[index] or HalfScreenX, HintOnScreen.x)
+                SmoothTargetY[index] = Lerp(FrameTime() / 0.1, SmoothTargetY[index] or HalfScreenY, HintOnScreen.y)
+                SmoothArrowX[index] = Lerp(FrameTime() / 0.1, SmoothArrowX[index] or HalfScreenX, HintOnScreen.x)
+                SmoothArrowY[index] = Lerp(FrameTime() / 0.1, SmoothArrowY[index] or HalfScreenY, HintOnScreen.y)
+                surface.SetMaterial(GIIcons[IconType])
+                surface.SetDrawColor(255, 255, 255, 255)
+                surface.DrawTexturedRectRotated(SmoothTargetX[index], SmoothTargetY[index], 50, 50, 0)
+                draw.SimpleText(HintText, "HintFont", SmoothTargetX[index] + 30, SmoothTargetY[index], Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            end
         end
 
         if HintSoundPlayed[index] != true and HintSnd != nil and GISounds[HintSnd] then
@@ -92,3 +116,8 @@ hook.Add( "InitPostEntity", "LoadGIContentClient", function()
 	AddGIIcons()
     AddGISounds()
 end)
+
+concommand.Add("GIF_reload_client_content", function()  
+	AddGIIcons()
+	AddGISounds()
+end, nil, "Reload client content of Game Instructor Framework. Useful to add new icons/sounds or reload them after editing.")

@@ -12,7 +12,7 @@ function AddGIIcons()
     for _, fileName in ipairs(files) do
         local variableName = string_gsub(fileName, "%.png$", "")
         GIIcons[variableName] = Material("gi_icons/" .. fileName)
-        print("Icon: (" .. variableName .. ") has been loaded.")
+        print("[GIF Content Manager] Icon (" .. variableName .. ") has been loaded.")
     end
 end
 
