@@ -18,7 +18,7 @@ function CreateGIHint(icon, text, pos, snd)
         pos:SetNWString("GIText", text)
         pos:SetNWString("GISound", snd)
     else
-        print("[Game Instructor [SERVER]] Oops, couldn't add hint! \n")
+        print("[Game Instructor [SERVER]] Oops, couldn't add hint to provided entity! \n")
     end
 end
 
@@ -34,7 +34,7 @@ function CreateGIVectorHint(icon, text, pos, snd, uniqueid)
 
         HintTable[uniqueid] = VectorInfo
     else
-        print("[Game Instructor [SERVER]] Oops, couldn't add hint! \n")
+        print("[Game Instructor [SERVER]] Oops, couldn't create hint at provided position! \n")
     end
 end
 
@@ -47,7 +47,7 @@ function RemoveGIHint(pos)
         pos:SetNWString("GISound", nil)
         HintTable[ID] = nil
     else
-        print("[Game Instructor [SERVER]] Oops, couldn't remove hint! \n")
+        print("[Game Instructor [SERVER]] Oops, couldn't remove hint from provided entity! \n")
     end
 end
 
@@ -55,24 +55,28 @@ end
 function RemoveGIVectorHint(uniqueid)
     if uniqueid != nil then
         HintTable[uniqueid] = nil
+    else
+        print("[Game Instructor [SERVER]] Oops, couldn't remove hint at provided position! \n")
     end
 end
 
 
 local function GatherHints()
     for i, ent in ents.Iterator() do
-        local hintindex = ent:GetCreationID()
-        local iconKey = ent:GetNWString("GIIcon")
+        if IsValid(ent) then
+            local hintindex = ent:GetCreationID()
+            local iconKey = ent:GetNWString("GIIcon")
 
-        if GIIcons[iconKey] then
-            local HintInfo = {
-                position = ent:WorldSpaceCenter(),
-                icontype = iconKey,
-                hinttext = ent:GetNWString("GIText"),
-                hintsound = ent:GetNWString("GISound"),
-            }
+            if GIIcons[iconKey] then
+                local HintInfo = {
+                    position = ent:WorldSpaceCenter(),
+                    icontype = iconKey,
+                    hinttext = ent:GetNWString("GIText"),
+                    hintsound = ent:GetNWString("GISound"),
+                }
 
-            HintTable[hintindex] = HintInfo
+                HintTable[hintindex] = HintInfo
+            end
         end
     end
 
@@ -81,7 +85,6 @@ end
 
 local function SendHintToClients()
     local HintData = GatherHints()
-    --PrintTable(HintTable)
 
     net.Start("GINetwork")
     net.WriteTable(HintData)
@@ -95,7 +98,9 @@ end)
 hook.Add("PreUndo", "RemoveHintsOnPreUndo", function(undoData)
     if undoData.Entities then
         for _, entity in pairs(undoData.Entities) do
-            RemoveGIHint(entity)
+            if IsValid(entity) and entity:GetNWString("GIIcon") != nil then
+                RemoveGIHint(entity)
+            end
         end
     end
 end)
@@ -105,12 +110,15 @@ hook.Add("PreCleanupMap", "RemoveHintsOnCleaningMap", function()
 end)
 
 hook.Add("EntityRemoved", "RemoveHintsOnEntityRemoved", function(entity)
-    RemoveGIHint(entity)
+    if entity:GetNWString("GIIcon") == GIIcons[entity:GetNWString("GIIcon")] then
+        RemoveGIHint(entity)
+    end
 end)
 
 concommand.Add("GIF_reload_server_content", function()  
 	AddGIIcons()
 	AddGISounds()
 end, nil, "Reload server content of Game Instructor Framework. Useful to add new icons/sounds or reload them after editing.")
+
 
 
