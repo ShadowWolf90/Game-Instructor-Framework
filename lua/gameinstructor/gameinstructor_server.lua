@@ -109,9 +109,11 @@ hook.Add("PreCleanupMap", "RemoveHintsOnCleaningMap", function()
     HintTable = { }
 end)
 
-hook.Add("EntityRemoved", "RemoveHintsOnEntityRemoved", function(entity)
+hook.Add("EntityRemoved", "RemoveHintsOnEntityRemoved", function(entity, fullupdate)
+    if ( fullupdate ) then return end
     if entity:GetNWString("GIIcon") == GIIcons[entity:GetNWString("GIIcon")] then
         RemoveGIHint(entity)
+        HintTable[entity:GetCreationID()] = nil --To make 100% sure that certain entity have removed hint.
     end
 end)
 
